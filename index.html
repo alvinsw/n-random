@@ -22,12 +22,8 @@
     </div>
     <button id="calc" type="button" onclick="calculate()">Calculate</button>
   </form>
-  <h2 id="result"></h2>
+  <h2><span id="result"></span> <span id="resultSum"></span></h2>
   <script>
-    /**
-     * 6 num, 1-49, 3 odd 3 even, sum 131-150
-     * prioritise: number with highest occurance, lowest
-     */
     function getRandomInt(min, max) {
       min = Math.ceil(min);
       max = Math.floor(max);
@@ -102,8 +98,10 @@
         ++i;
         if (i > max) break;
       }
-      console.log('sum ', result.reduce((a, b) => a + b, 0));
+      let sum = result.reduce((a, b) => a + b, 0);
+      console.log('sum ', sum);
       document.getElementById('result').innerText = result.join(', ');
+      document.getElementById('resultSum').innerText = '(' + sum + ')';
     }
   </script>
   
