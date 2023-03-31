@@ -1,0 +1,111 @@
+<html>
+<head></head>
+<body>
+
+  <h1>Parametric N-Count Random Number Generator</h1>
+  <form>
+    <div>
+      <label for="count">Count: </label>
+      <input type="number" name="count" id="count" required value="6"/> 
+      (<input type="number" name="countEven" id="countEven" required value="3" title="Even Count"/>,
+      <input type="number" name="countOdd" id="countOdd" required value="3" title="Odd Count"/>)
+    </div>
+    <div>
+      <label>Range: </label>
+      <input type="number" name="min" id="min" required value="1" title="Min"/>
+      <input type="number" name="max" id="max" required value="49" title="Max"/>
+    </div>
+    <div>
+      <label>Sum Range: </label>
+      <input type="number" name="sumMin" id="sumMin" required value="131" title="Min Sum"/>
+      <input type="number" name="sumMax" id="sumMax" required value="150" title="Max Sum"/>
+    </div>
+    <button id="calc" type="button" onclick="calculate()">Calculate</button>
+  </form>
+  <h2 id="result"></h2>
+  <script>
+    /**
+     * 6 num, 1-49, 3 odd 3 even, sum 131-150
+     * prioritise: number with highest occurance, lowest
+     */
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function isEven(n) {
+      return n % 2 == 0;
+    }
+
+    function calculate() {
+      const f = document.forms[0];
+      const count = parseInt(f.count.value);
+      var countEven = parseInt(f.countEven.value);
+      var countOdd = parseInt(f.countOdd.value);
+      const min = parseInt(f.min.value);
+      const max = parseInt(f.max.value);
+      const sumMin = parseInt(f.sumMin.value);
+      const sumMax = parseInt(f.sumMax.value);
+
+      if (countEven + countOdd !== count) {
+        alert('Sum of Even and Odd counts must be the same to Count');
+        return;
+      }
+      var pool = [];
+      for (let n = min; n <= max; ++n ) {
+        pool.push(n);
+      }
+      shuffleArray(pool);
+      var result = [];
+      var smin = sumMin; 
+      var smax = sumMax;
+      function fulfilEvenOdd(n) {
+        if (isEven(n)) {
+          if (countEven) {
+            countEven--;
+            return true;
+          }
+        } else {
+          if (countOdd) {
+            countOdd--;
+            return true;
+          }
+        }
+        return false;
+      }
+      let i = 0;
+      while (result.length < count) {
+        let n = pool.pop();
+        let sortedPool = pool.slice(0);
+        sortedPool.sort((a, b) => a - b);
+        let sliceIndex = result.length - count + 1;
+        let d = sliceIndex < 0 ? sortedPool.slice(result.length - count + 1).reduce((a, b) => a + b, 0) : 0;
+        //console.log('n ', n, ' ,min ', smin, ' ,d ', d, ' ,max ', smax);
+        if (n <= smax && n >= smin - d) {
+          if (fulfilEvenOdd(n)) {
+            //console.log(n);
+            result.push(n);
+            smax -= n;
+            smin -= n;
+            continue;
+          }
+        }
+        pool.unshift(n);
+        ++i;
+        if (i > max) break;
+      }
+      console.log('sum ', result.reduce((a, b) => a + b, 0));
+      document.getElementById('result').innerText = result.join(', ');
+    }
+  </script>
+  
+</body>
+</html>
